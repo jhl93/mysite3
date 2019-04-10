@@ -14,22 +14,15 @@ public class GuestBookDao {
 	@Autowired
 	private SqlSession sqlSession;
 
-	public List<GuestBookVo> getList() {
-		List<GuestBookVo> list = sqlSession.selectList("selectList");
-		System.out.println(list.toString());
-
-		return list;
+	public List<GuestBookVo> selectList() {
+		return sqlSession.selectList("guestbook.selectList");
 	}
 
 	public int insert(GuestBookVo vo) {
-		int count = sqlSession.insert("insert", vo);
-
-		return count;
+		return sqlSession.insert("guestbook.insert", vo);
 	}
 
 	public int delete(GuestBookVo vo) {
-		int count = sqlSession.delete("delete", vo);
-
-		return count;
+		return sqlSession.delete("guestbook.delete", vo);
 	}
 }

@@ -33,6 +33,7 @@ public class UserDao {
 	}
 	
 	public int update(UserVo uservo) {
+		System.out.println(uservo.toString());
 		return sqlSession.update("user.update", uservo);
 	}
 }

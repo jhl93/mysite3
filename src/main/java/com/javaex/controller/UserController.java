@@ -44,6 +44,14 @@ public class UserController {
 		}
 	}
 
+	@RequestMapping(value = "/logout", method = RequestMethod.GET)
+	public String logout(HttpSession session) {
+		session.removeAttribute("authUser");
+		session.invalidate(); // 세션을 없애고 속해있는 값들까지 없앰
+
+		return "redirect:/main";
+	}
+
 	@RequestMapping(value = "/joinform", method = RequestMethod.GET)
 	public String joinform() {
 		System.out.println("joinform 요청");
@@ -72,14 +80,17 @@ public class UserController {
 		model.addAttribute("uservo", uservo);
 		return "user/modifyform";
 	}
-	
+
 	@RequestMapping(value = "/modify", method = RequestMethod.POST)
-	public String modify(@ModelAttribute UserVo uservo) {
+	public String modify(@ModelAttribute UserVo uservo, HttpSession session) {
 		System.out.println("modify 요청");
-		
+
+		System.out.println(uservo.toString());
 		int count = userService.modify(uservo);
 		System.out.println("성공 횟수: " + count);
 
+		UserVo authUser = (UserVo) session.getAttribute("authUser");
+		authUser.setName(uservo.getName());
 		return "redirect:/main";
 	}
 }

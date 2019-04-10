@@ -19,6 +19,7 @@
 				<div id="user">
 					<h2>로그인</h2>
 					<form class="form-box" method="post" action="${pageContext.request.contextPath}/user/modify">
+						<input id="no" type="hidden" name="no" value="${uservo.no}">
 						<div class="form-group">
 							<label class="block-label" for="name">이름</label> <input id="name" type="text" name="name" value="${uservo.name}">
 						</div>

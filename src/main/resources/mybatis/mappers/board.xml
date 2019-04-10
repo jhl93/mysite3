@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="board">
+
+	<select id="selectList" resultType="BoardVo">
+		<![CDATA[
+			select b.no,
+				   title, 
+				   content, 
+				   hit, 
+				   reg_date as redDate, 
+				   user_no as userNo, 
+				   name
+			from board b join users u on b.user_no = u.no
+			order by b.no
+   		]]>
+	</select>
+
+	<select id="selectOne" parameterType="int" resultType="BoardVo">
+		<![CDATA[
+			select no, title, content, hit, reg_date as regDate, user_no as userNo
+			from board
+			where no = #{no}
+   		]]>
+	</select>
+	
+	<insert id="insert" parameterType="BoardVo">
+		<![CDATA[
+			insert into board ( no, title, content, user_no )
+			values ( seq_board_no.nextval, #{title}, #{content}, #{userNo} )
+   		]]>
+	</insert>
+	
+	<update id="update" parameterType="BoardVo">
+		<![CDATA[
+			update board set title = #{title},
+							 content = #{content}
+			where no = #{no}
+   		]]>
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		<![CDATA[
+			delete from board
+			where no = #{no}
+   		]]>
+	</delete>
+</mapper>
