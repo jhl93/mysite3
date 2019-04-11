@@ -3,17 +3,32 @@
 
 <mapper namespace="board">
 
-	<select id="selectList" resultType="BoardVo">
+	<select id="selectList" parameterType="map" resultType="BoardVo">
 		<![CDATA[
-			select b.no,
-				   title, 
-				   content, 
-				   hit, 
-				   reg_date as redDate, 
-				   user_no as userNo, 
-				   name
-			from board b join users u on b.user_no = u.no
-			order by b.no
+			select rnum,
+      			   no,
+     			   title,
+       			   hit,
+       			   reg_date regDate,
+       			   user_no userNo,
+      			   name
+			from ( select rownum rnum,
+			              no,
+			              title,
+			              hit,
+			              reg_date,
+			              user_no,
+			              name
+			        from ( select b.no,
+			                      b.title,
+			                      b.hit,
+			                      b.reg_date,
+			                      b.user_no,
+			                      u.name
+			                from board b join users u on b.user_no = u.no
+			                where b.title like '%${kwd}%'
+			                order by b.no desc ))
+			where rnum > #{startRnum} and rnum <= #{endRnum}
    		]]>
 	</select>
 
@@ -24,14 +39,14 @@
 			where no = #{no}
    		]]>
 	</select>
-	
+
 	<insert id="insert" parameterType="BoardVo">
 		<![CDATA[
 			insert into board ( no, title, content, user_no )
 			values ( seq_board_no.nextval, #{title}, #{content}, #{userNo} )
    		]]>
 	</insert>
-	
+
 	<update id="update" parameterType="BoardVo">
 		<![CDATA[
 			update board set title = #{title},
@@ -39,11 +54,27 @@
 			where no = #{no}
    		]]>
 	</update>
-	
+
+	<update id="updateHit" parameterType="int">
+		<![CDATA[
+			update board set hit = hit+1
+			where no = #{no}
+   		]]>
+	</update>
+
 	<delete id="delete" parameterType="int">
 		<![CDATA[
 			delete from board
 			where no = #{no}
    		]]>
 	</delete>
+
+	<select id="totalCount" parameterType="map" resultType="int">
+		<![CDATA[
+			select count(*)
+			from board
+			where title like '%${kwd}%'
+   		]]>
+	</select>
+
 </mapper>

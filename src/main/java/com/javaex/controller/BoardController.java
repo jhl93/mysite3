@@ -1,6 +1,6 @@
 package com.javaex.controller;
 
-import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -23,13 +23,15 @@ public class BoardController {
 	@Autowired
 	private BoardService boardService;
 
-	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	public String list(Model model) {
+	@RequestMapping(value = { "", "/list" }, method = RequestMethod.GET)
+	public String list(@RequestParam(value = "crtPage", required = false, defaultValue = "1") int crtPage,
+					   @RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
+					   Model model) {
 		System.out.println("list 요청");
 
-		List<BoardVo> list = boardService.getList();
+		Map<String, Object> map = boardService.getList(crtPage, kwd);
 
-		model.addAttribute("list", list);
+		model.addAttribute("map", map);
 		return "board/list";
 	}
 
@@ -98,4 +100,5 @@ public class BoardController {
 
 		return "redirect:/board/list";
 	}
+	
 }

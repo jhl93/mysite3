@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
-	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
@@ -12,7 +12,11 @@
         http://ehcache-spring-annotations.googlecode.com/svn/schema/ehcache-spring
         http://ehcache-spring-annotations.googlecode.com/svn/schema/ehcache-spring/ehcache-spring-1.1.xsd
         http://www.springframework.org/schema/task
-        http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+        http://www.springframework.org/schema/task/spring-task-3.0.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+        ">
+
 
 	<context:annotation-config />
 
@@ -41,5 +45,13 @@
 	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
 		<constructor-arg index="0" ref="sqlSessionFactory" />
 	</bean>
+
+	<!-- transactionManager -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="oracleDatasource"></property>
+	</bean>
+
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
 
 </beans>
