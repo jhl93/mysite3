@@ -33,7 +33,7 @@
 						<c:forEach items="${map.list}" var="vo">
 							<tr>
 								<td>${vo.no}</td>
-								<td><a href="${pageContext.request.contextPath}/board/read?no=${vo.no}">${vo.title}</a></td>
+								<td><a href="${pageContext.request.contextPath}/board/read?no=${vo.no}&crtPage=${page}&kwd=${map.kwd}">${vo.title}</a></td>
 								<td>${vo.name}</td>
 								<td>${vo.hit}</td>
 								<td>${vo.regDate}</td>

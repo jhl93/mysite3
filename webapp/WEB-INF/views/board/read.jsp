@@ -40,7 +40,7 @@
 						</tr>
 					</table>
 					<div class="bottom">
-						<a href="${pageContext.request.contextPath}/board/list">글목록</a>
+						<a href="${pageContext.request.contextPath}/board/list?crtPage=${crtPage}&kwd=${kwd}">글목록</a>
 						<c:if
 							test="${boardvo.userNo == sessionScope.authUser.no }">
 							<a

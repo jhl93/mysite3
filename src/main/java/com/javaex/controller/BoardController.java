@@ -25,8 +25,7 @@ public class BoardController {
 
 	@RequestMapping(value = { "", "/list" }, method = RequestMethod.GET)
 	public String list(@RequestParam(value = "crtPage", required = false, defaultValue = "1") int crtPage,
-					   @RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
-					   Model model) {
+			@RequestParam(value = "kwd", required = false, defaultValue = "") String kwd, Model model) {
 		System.out.println("list 요청");
 
 		Map<String, Object> map = boardService.getList(crtPage, kwd);
@@ -36,12 +35,15 @@ public class BoardController {
 	}
 
 	@RequestMapping(value = "/read", method = RequestMethod.GET)
-	public String read(@RequestParam("no") int no, Model model) {
+	public String read(@RequestParam(value = "crtPage", required = false, defaultValue = "1") int crtPage,
+			@RequestParam(value = "kwd", required = false, defaultValue = "") String kwd, @RequestParam("no") int no,
+			Model model) {
 		System.out.println("read 요청");
 
 		BoardVo boardvo = boardService.read(no);
 		model.addAttribute("boardvo", boardvo);
-
+		model.addAttribute("crtPage", crtPage);
+		model.addAttribute("kwd", kwd);
 		return "board/read";
 	}
 
@@ -100,5 +102,5 @@ public class BoardController {
 
 		return "redirect:/board/list";
 	}
-	
+
 }
