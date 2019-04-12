@@ -38,7 +38,7 @@
 								<td>${vo.hit}</td>
 								<td>${vo.regDate}</td>
 								<td><c:if test="${vo.userNo == sessionScope.authUser.no}">
-										<a href="${pageContext.request.contextPath}/board/delete?no=${vo.no}" class="del">삭제</a>
+										<a href="${pageContext.request.contextPath}/board/delete?no=${vo.no}&crtPage=${crtPage}&kwd=${map.kwd}" class="del">삭제</a>
 									</c:if></td>
 							</tr>
 						</c:forEach>
