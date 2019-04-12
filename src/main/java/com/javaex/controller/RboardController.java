@@ -12,16 +12,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.javaex.service.BoardService;
-import com.javaex.vo.BoardVo;
+import com.javaex.service.RboardService;
+import com.javaex.vo.RboardVo;
 import com.javaex.vo.UserVo;
 
 @Controller
-@RequestMapping("/board")
-public class BoardController {
+@RequestMapping(value = "/rboard")
+public class RboardController {
 
 	@Autowired
-	private BoardService boardService;
+	private RboardService rboardService;
 
 	/* 전체 및 검색결과 출력 */
 	@RequestMapping(value = { "", "/list" }, method = RequestMethod.GET)
@@ -30,12 +30,12 @@ public class BoardController {
 					   Model model) {
 		System.out.println("list 요청");
 
-		Map<String, Object> map = boardService.getList(crtPage, kwd);
+		Map<String, Object> map = rboardService.getList(crtPage, kwd);
 
 		model.addAttribute("map", map);
 		model.addAttribute("crtPage", crtPage);
 		model.addAttribute("kwd", kwd);
-		return "board/list";
+		return "rboard/list";
 	}
 
 	/* 게시글 읽기 */
@@ -46,43 +46,53 @@ public class BoardController {
 					   Model model) {
 		System.out.println("read 요청");
 
-		BoardVo boardvo = boardService.read(no);
-		model.addAttribute("boardvo", boardvo);
-		model.addAttribute("crtPage", crtPage);
-		model.addAttribute("kwd", kwd);
-		return "board/read";
+		RboardVo rboardvo = rboardService.read(no);
+		if("delete".equals(rboardvo.getState())) {
+			return "redirect:/rboard/list";
+		} else {
+			model.addAttribute("rboardvo", rboardvo);
+			model.addAttribute("crtPage", crtPage);
+			model.addAttribute("kwd", kwd);
+			return "rboard/read";
+		}
 	}
 
-	/* 게시글 작성 form */
+	/* 글 작성 form */
 	@RequestMapping(value = "/wform", method = RequestMethod.GET)
 	public String wform(@RequestParam(value = "crtPage", required = false, defaultValue = "1") int crtPage,
-						@RequestParam(value = "kwd", required = false, defaultValue = "") String kwd, 
+						@RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
+						@ModelAttribute RboardVo rboardvo, 
 						Model model, HttpSession session) {
 		System.out.println("wform 요청");
 
 		UserVo authUser = (UserVo) session.getAttribute("authUser");
 		if (authUser != null) {
+			model.addAttribute("rboardvo", rboardvo);
 			model.addAttribute("crtPage", crtPage);
 			model.addAttribute("kwd", kwd);
 	
-			return "board/writeform";
+			return "rboard/writeform";
 		} else {
-			return "redirect:/board/list";
+			return "redirect:/rboard/list";
 		}
 	}
 
-	/* 게시글 작성 */
+	/* 게시글 및 답글 작성 */
 	@RequestMapping(value = "/write", method = RequestMethod.POST)
-	public String write(@ModelAttribute BoardVo boardvo, HttpSession session) {
+	public String write(@ModelAttribute RboardVo rboardvo, HttpSession session) {
 		System.out.println("write 요청");
 
 		UserVo authUser = (UserVo) session.getAttribute("authUser");
-		boardvo.setUserNo(authUser.getNo());
+		rboardvo.setUserNo(authUser.getNo());
 
-		int count = boardService.write(boardvo);
-		System.out.println("성공 횟수: " + count);
-
-		return "redirect:/board/list";
+		if (rboardvo.isReply()) { // 일반글 아닌 답글일 경우 true
+			int count = rboardService.reply(rboardvo);
+			System.out.println("답글 성공 횟수: " + count);
+		} else {
+			int count = rboardService.write(rboardvo);
+			System.out.println("성공 횟수: " + count);
+		}
+		return "redirect:/rboard/list";
 	}
 
 	/* 게시글 수정 form */
@@ -94,50 +104,49 @@ public class BoardController {
 		System.out.println("mform 요청");
 
 		UserVo authUser = (UserVo) session.getAttribute("authUser");
-		BoardVo boardvo = boardService.read(no);
+		RboardVo rboardvo = rboardService.read(no);
 		
-		if( authUser != null && authUser.getNo() == boardvo.getUserNo()) {
-			model.addAttribute("boardvo", boardvo);
+		if (authUser != null && authUser.getNo() == rboardvo.getUserNo()) {
+			model.addAttribute("rboardvo", rboardvo);
 			model.addAttribute("crtPage", crtPage);
 			model.addAttribute("kwd", kwd);
-			return "board/modifyform";
+			return "rboard/modifyform";
 		} else {
-			return "redirect:/board/list";
+			return "redirect:/rboard/list";
 		}
 	}
 
 	/* 게시글 수정 */
 	@RequestMapping(value = "/modify", method = RequestMethod.POST)
-	public String modify(@ModelAttribute BoardVo boardvo) {
+	public String modify(@ModelAttribute RboardVo rboardvo) {
 		System.out.println("modify 요청");
 
-		int count = boardService.modify(boardvo);
+		int count = rboardService.modify(rboardvo);
 		System.out.println("성공 횟수: " + count);
 
-		return "redirect:/board/read?no=" + boardvo.getNo();
+		return "redirect:/rboard/read?no=" + rboardvo.getNo();
 	}
-
-	/* 게시글 삭제 */
+	
+	/* 게시글 삭제 (state = 'delete') */
 	@RequestMapping(value = "/delete", method = RequestMethod.GET)
 	public String delete(@RequestParam("no") int no, HttpSession session,
 						 @RequestParam(value = "crtPage", required = false, defaultValue = "1") int crtPage,
-						 @RequestParam(value = "kwd", required = false, defaultValue = "") String kwd, 
+						 @RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
 						 Model model) {
 		System.out.println("delete 요청");
 
 		UserVo authUser = (UserVo) session.getAttribute("authUser");
 
-		BoardVo boardvo = boardService.read(no);
+		RboardVo rboardvo = rboardService.read(no);
 
-		if (authUser != null && authUser.getNo() == boardvo.getUserNo()) {
-			int count = boardService.delete(no);
+		if (authUser != null && authUser.getNo() == rboardvo.getUserNo()) {
+			int count = rboardService.delete(no);
 			System.out.println("성공 횟수: " + count);
 		}
 		
 		model.addAttribute("crtPage", crtPage);
 		model.addAttribute("kwd", kwd);
 
-		return "redirect:/board/list";
+		return "redirect:/rboard/list";
 	}
-
 }

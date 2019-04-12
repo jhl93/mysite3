@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="rboard">
+	<select id="selectList" parameterType="map" resultType="RboardVo">
+		<![CDATA[
+			select rnum,
+      			   no,
+     			   title,
+       			   hit,
+       			   reg_date regDate,
+       			   group_no groupNo,
+       			   order_no orderNo,
+       			   depth,
+       			   user_no userNo,
+       			   state,
+      			   name
+			from ( select rownum rnum,
+			              no,
+			              title,
+			              hit,
+			              reg_date,
+			              group_no,
+			              order_no,
+			              depth,
+			              user_no,
+			              state,
+			              name
+			        from ( select r.no,
+			                      r.title,
+			                      r.hit,
+			                      r.reg_date,
+			                      r.group_no,
+			                      r.order_no,
+			                      r.depth,
+			                      r.user_no,
+			                      r.state,
+			                      u.name
+			                from rboard r join users u on r.user_no = u.no
+		]]>
+							<if test="kwd != null and kwd != ''">            
+			                where r.title like '%${kwd}%'
+			                </if>
+		<![CDATA[
+			                order by r.group_no desc, r.order_no asc ))
+			where rnum > #{startRnum} and rnum <= #{endRnum}
+   		]]>
+	</select>
+	
+	<select id="totalCount" parameterType="map" resultType="int">
+		<![CDATA[
+			select count(*)
+			from rboard
+		]]>
+			<if test="kwd != null and kwd != ''">            
+			where r.title like '%${kwd}%'
+			</if>
+		<![CDATA[
+   		]]>
+	</select>
+	
+	<select id="selectOne" parameterType="int" resultType="RboardVo">
+		<![CDATA[
+			select no, title, content, hit, reg_date as regDate, user_no as userNo, group_no as groupNo, order_no as orderNo, depth, state
+			from rboard
+			where no = #{no}
+   		]]>
+	</select>
+
+	<!-- 새 글 추가 -->
+	<insert id="insert" parameterType="RboardVo">
+		<![CDATA[
+			insert into rboard ( no,
+								 user_no,
+								 title,
+								 content,
+								 group_no,
+								 order_no,
+								 depth )
+			values ( seq_rboard_no.nextval,
+					 #{userNo},
+					 #{title},
+					 #{content},
+					 seq_rboard_no.currval,
+					 1,
+					 0 )
+   		]]>
+	</insert>
+	
+	<!-- 답글 추가 -->
+	<insert id="insertReply" parameterType="RboardVo">
+		<![CDATA[
+			insert into rboard ( no,
+								 user_no,
+								 title,
+								 content,
+								 group_no,
+								 order_no,
+								 depth )
+			values ( seq_rboard_no.nextval,
+					 #{userNo},
+					 #{title},
+					 #{content},
+					 #{groupNo},
+					 #{orderNo} + 1,
+					 #{depth} + 1 )
+   		]]>
+	</insert>
+
+	<update id="update" parameterType="RboardVo">
+		<![CDATA[
+			update rboard set title = #{title},
+							 content = #{content}
+			where no = #{no}
+   		]]>
+	</update>
+
+	<update id="updateHit" parameterType="int">
+		<![CDATA[
+			update rboard set hit = hit+1
+			where no = #{no}
+   		]]>
+	</update>
+	
+	<update id="updateOrderNo" parameterType="RboardVo">
+		<![CDATA[
+			update rboard set order_no = order_no + 1
+			where group_no = #{groupNo}
+			and order_no >= #{orderNo} + 1
+   		]]>
+	</update>
+	
+	<update id="updateState" parameterType="int">
+		<![CDATA[
+			update rboard set state = 'delete'
+			where no = #{no}
+   		]]>
+	</update>
+	
+</mapper>

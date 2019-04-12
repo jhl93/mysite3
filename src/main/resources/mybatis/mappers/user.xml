@@ -35,7 +35,7 @@
 		]]>
 	</select>
 	
-	<update id="update" parameterType="UserVo">
+	<update id="updateState" parameterType="UserVo">
 		<![CDATA[
 			update users set name = #{name}, password = #{password}, gender = #{gender}
 			where no = #{no}

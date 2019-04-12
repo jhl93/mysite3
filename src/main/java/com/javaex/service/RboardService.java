@@ -8,14 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.javaex.dao.BoardDao;
+import com.javaex.dao.RboardDao;
 import com.javaex.vo.BoardVo;
+import com.javaex.vo.RboardVo;
 
 @Service
-public class BoardService {
+public class RboardService {
 
 	@Autowired
-	private BoardDao dao;
+	private RboardDao dao;
 
 	/* 전체 및 검색결과 (페이징) */
 	public Map<String, Object> getList(int crtPage, String kwd) {
@@ -78,26 +79,36 @@ public class BoardService {
 		return map;
 	}
 
+	/* 게시글 작성 */
+	public int write(RboardVo rboardvo) {
+		return dao.insert(rboardvo);
+	}
+
 	/* 게시글 읽기 */
 	@Transactional
-	public BoardVo read(int no) {
+	public RboardVo read(int no) {
 		dao.updateHit(no);
 		return dao.select(no);
 	}
 
-	/* 게시글 작성 */
-	public int write(BoardVo boardvo) {
-		return dao.insert(boardvo);
+	/* 게시글 수정 */
+	public int modify(RboardVo rboardvo) {
+		return dao.update(rboardvo);
 	}
 
-	/* 게시글 수정 */
-	public int modify(BoardVo boardvo) {
-		return dao.update(boardvo);
+	/* 답글 작성 */
+	@Transactional
+	public int reply(RboardVo rboardvo) {
+		
+		int count = dao.updateOrderNo(rboardvo);
+		System.out.println("성공 횟수: " + count);
+		
+		return dao.insertReply(rboardvo);
 	}
 
 	/* 게시글 삭제 */
 	public int delete(int no) {
-		return dao.delete(no);
+		return dao.updateState(no);
 	}
 
 }
