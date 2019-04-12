@@ -33,7 +33,7 @@
 						<c:forEach items="${map.list}" var="vo">
 							<tr>
 								<td>${vo.no}</td>
-								<td><a href="${pageContext.request.contextPath}/board/read?no=${vo.no}&crtPage=${page}&kwd=${map.kwd}">${vo.title}</a></td>
+								<td><a href="${pageContext.request.contextPath}/board/read?no=${vo.no}&crtPage=${crtPage}&kwd=${map.kwd}">${vo.title}</a></td>
 								<td>${vo.name}</td>
 								<td>${vo.hit}</td>
 								<td>${vo.regDate}</td>
@@ -51,7 +51,7 @@
 							<c:forEach begin="${map.startPageBtnNo }" end="${map.endPageBtnNo }" step="1" var="page">
 								<c:choose>
 									<c:when test="${param.crtPage eq page }">
-										<li class = "selected"><a href="${pageContext.request.contextPath}/board/list?crtPage=${page}&kwd=${map.kwd}">${page}</a></li>
+										<li class="selected"><a href="${pageContext.request.contextPath}/board/list?crtPage=${page}&kwd=${map.kwd}">${page}</a></li>
 									</c:when>
 									<c:otherwise>
 										<li><a href="${pageContext.request.contextPath}/board/list?crtPage=${page}&kwd=${map.kwd}">${page}</a></li>
@@ -65,7 +65,7 @@
 					</div>
 					<div class="bottom">
 						<c:if test="${not empty sessionScope.authUser }">
-							<a href="${pageContext.request.contextPath}/board/wform" id="new-book">글쓰기</a>
+							<a href="${pageContext.request.contextPath}/board/wform?crtPage=${crtPage}&kwd=${map.kwd}" id="new-book">글쓰기</a>
 						</c:if>
 					</div>
 				</div>

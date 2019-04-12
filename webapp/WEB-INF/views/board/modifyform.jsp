@@ -41,7 +41,7 @@
 						</table>
 				
 						<div class="bottom">
-							<a href="${pageContext.request.contextPath}/board/list">취소</a>
+							<a href="${pageContext.request.contextPath}/board/list?crtPage=${crtPage}&kwd=${kwd}">취소</a>
 							<input type="submit" value="수정">
 						</div>
 					</form>	

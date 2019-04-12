@@ -31,6 +31,8 @@ public class BoardController {
 		Map<String, Object> map = boardService.getList(crtPage, kwd);
 
 		model.addAttribute("map", map);
+		model.addAttribute("crtPage", crtPage);
+		model.addAttribute("kwd", kwd);
 		return "board/list";
 	}
 
@@ -48,8 +50,12 @@ public class BoardController {
 	}
 
 	@RequestMapping(value = "/wform", method = RequestMethod.GET)
-	public String wform() {
+	public String wform(@RequestParam(value = "crtPage", required = false, defaultValue = "1") int crtPage,
+			@RequestParam(value = "kwd", required = false, defaultValue = "") String kwd, Model model) {
 		System.out.println("wform 요청");
+
+		model.addAttribute("crtPage", crtPage);
+		model.addAttribute("kwd", kwd);
 
 		return "board/writeform";
 	}
@@ -68,12 +74,15 @@ public class BoardController {
 	}
 
 	@RequestMapping(value = "/mform", method = RequestMethod.GET)
-	public String mform(@RequestParam("no") int no, Model model) {
+	public String mform(@RequestParam("no") int no, Model model,
+			@RequestParam(value = "crtPage", required = false, defaultValue = "1") int crtPage,
+			@RequestParam(value = "kwd", required = false, defaultValue = "") String kwd) {
 		System.out.println("mform 요청");
 
 		BoardVo boardvo = boardService.read(no);
 		model.addAttribute("boardvo", boardvo);
-
+		model.addAttribute("crtPage", crtPage);
+		model.addAttribute("kwd", kwd);
 		return "board/modifyform";
 	}
 
@@ -88,7 +97,9 @@ public class BoardController {
 	}
 
 	@RequestMapping(value = "/delete", method = RequestMethod.GET)
-	public String delete(@RequestParam("no") int no, HttpSession session) {
+	public String delete(@RequestParam("no") int no, HttpSession session,
+			@RequestParam(value = "crtPage", required = false, defaultValue = "1") int crtPage,
+			@RequestParam(value = "kwd", required = false, defaultValue = "") String kwd, Model model) {
 		System.out.println("delete 요청");
 
 		UserVo authUser = (UserVo) session.getAttribute("authUser");
@@ -99,6 +110,9 @@ public class BoardController {
 			int count = boardService.delete(no);
 			System.out.println("성공 횟수: " + count);
 		}
+		
+		model.addAttribute("crtPage", crtPage);
+		model.addAttribute("kwd", kwd);
 
 		return "redirect:/board/list";
 	}

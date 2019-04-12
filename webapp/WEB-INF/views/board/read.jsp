@@ -44,7 +44,7 @@
 						<c:if
 							test="${boardvo.userNo == sessionScope.authUser.no }">
 							<a
-								href="${pageContext.request.contextPath}/board/mform?no=${boardvo.no}">글수정</a>
+								href="${pageContext.request.contextPath}/board/mform?no=${boardvo.no}&crtPage=${crtPage}&kwd=${kwd}">글수정</a>
 						</c:if>
 					</div>
 
