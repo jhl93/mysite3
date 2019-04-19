@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.javaex.interceptor.Auth;
+import com.javaex.interceptor.AuthUser;
 import com.javaex.service.UserService;
 import com.javaex.vo.UserVo;
 
@@ -28,30 +30,26 @@ public class UserController {
 		return "user/loginform";
 	}
 
-	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public String login(@RequestParam("email") String email, @RequestParam("password") String password,
-			HttpSession session) {
-		System.out.println("login 요청");
-		System.out.println("email: " + email + " / password: " + password);
-
-		UserVo authUser = userService.login(email, password);
-//		System.out.println(authUser.toString());
-
-		if (authUser == null) {
-			return "redirect:/user/loginform?result=fail";
-		} else {
-			session.setAttribute("authUser", authUser);
-			return "redirect:/main";
-		}
-	}
-
-	@RequestMapping(value = "/logout", method = RequestMethod.GET)
-	public String logout(HttpSession session) {
-		session.removeAttribute("authUser");
-		session.invalidate(); // 세션을 없애고 속해있는 값들까지 없앰
-
-		return "redirect:/main";
-	}
+	/*
+	 * @RequestMapping(value = "/login", method = RequestMethod.POST) public String
+	 * login(@RequestParam("email") String email, @RequestParam("password") String
+	 * password, HttpSession session) { System.out.println("login 요청");
+	 * System.out.println("email: " + email + " / password: " + password);
+	 * 
+	 * UserVo authUser = userService.login(email, password); //
+	 * System.out.println(authUser.toString());
+	 * 
+	 * if (authUser == null) { return "redirect:/user/loginform?result=fail"; } else
+	 * { session.setAttribute("authUser", authUser); return "redirect:/main"; } }
+	 */
+	
+	/*
+	 * @RequestMapping(value = "/logout", method = RequestMethod.GET) public String
+	 * logout(HttpSession session) { session.removeAttribute("authUser");
+	 * session.invalidate(); // 세션을 없애고 속해있는 값들까지 없앰
+	 * 
+	 * return "redirect:/main"; }
+	 */
 
 	@RequestMapping(value = "/joinform", method = RequestMethod.GET)
 	public String joinform() {
@@ -71,26 +69,26 @@ public class UserController {
 		return "user/joinsuccess";
 	}
 
+	@Auth
 	@RequestMapping(value = "/modifyform", method = RequestMethod.GET)
-	public String modifyform(HttpSession session, Model model) {
+	public String modifyform(@AuthUser UserVo authUser, Model model) {
 		System.out.println("modifyform 요청");
 
-		UserVo uservo = (UserVo) session.getAttribute("authUser");
-		uservo = userService.getInfo(uservo);
+		authUser = userService.getInfo(authUser);
 
-		model.addAttribute("uservo", uservo);
+		model.addAttribute("uservo", authUser);
 		return "user/modifyform";
 	}
 
+	@Auth
 	@RequestMapping(value = "/modify", method = RequestMethod.POST)
-	public String modify(@ModelAttribute UserVo uservo, HttpSession session) {
+	public String modify(@ModelAttribute UserVo uservo, @AuthUser UserVo authUser) {
 		System.out.println("modify 요청");
 
 		System.out.println(uservo.toString());
 		int count = userService.modify(uservo);
 		System.out.println("성공 횟수: " + count);
 
-		UserVo authUser = (UserVo) session.getAttribute("authUser");
 		authUser.setName(uservo.getName());
 		return "redirect:/main";
 	}

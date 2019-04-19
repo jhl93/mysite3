@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.javaex.interceptor.Auth;
+import com.javaex.interceptor.AuthUser;
 import com.javaex.service.RboardService;
 import com.javaex.vo.RboardVo;
 import com.javaex.vo.UserVo;
@@ -58,31 +60,27 @@ public class RboardController {
 	}
 
 	/* 글 작성 form */
+	@Auth
 	@RequestMapping(value = "/wform", method = RequestMethod.GET)
 	public String wform(@RequestParam(value = "crtPage", required = false, defaultValue = "1") int crtPage,
 						@RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
 						@ModelAttribute RboardVo rboardvo, 
-						Model model, HttpSession session) {
+						Model model, @AuthUser UserVo authUser) {
 		System.out.println("wform 요청");
 
-		UserVo authUser = (UserVo) session.getAttribute("authUser");
-		if (authUser != null) {
-			model.addAttribute("rboardvo", rboardvo);
-			model.addAttribute("crtPage", crtPage);
-			model.addAttribute("kwd", kwd);
+		model.addAttribute("rboardvo", rboardvo);
+		model.addAttribute("crtPage", crtPage);
+		model.addAttribute("kwd", kwd);
 	
-			return "rboard/writeform";
-		} else {
-			return "redirect:/rboard/list";
-		}
+		return "rboard/writeform";
 	}
 
 	/* 게시글 및 답글 작성 */
+	@Auth
 	@RequestMapping(value = "/write", method = RequestMethod.POST)
-	public String write(@ModelAttribute RboardVo rboardvo, HttpSession session) {
+	public String write(@ModelAttribute RboardVo rboardvo, @AuthUser UserVo authUser) {
 		System.out.println("write 요청");
 
-		UserVo authUser = (UserVo) session.getAttribute("authUser");
 		rboardvo.setUserNo(authUser.getNo());
 
 		if (rboardvo.isReply()) { // 일반글 아닌 답글일 경우 true
@@ -96,17 +94,17 @@ public class RboardController {
 	}
 
 	/* 게시글 수정 form */
+	@Auth
 	@RequestMapping(value = "/mform", method = RequestMethod.GET)
 	public String mform(@RequestParam("no") int no, Model model,
 						@RequestParam(value = "crtPage", required = false, defaultValue = "1") int crtPage,
 						@RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
-						HttpSession session) {
+						@AuthUser UserVo authUser) {
 		System.out.println("mform 요청");
 
-		UserVo authUser = (UserVo) session.getAttribute("authUser");
 		RboardVo rboardvo = rboardService.read(no);
 		
-		if (authUser != null && authUser.getNo() == rboardvo.getUserNo()) {
+		if (authUser.getNo() == rboardvo.getUserNo()) {
 			model.addAttribute("rboardvo", rboardvo);
 			model.addAttribute("crtPage", crtPage);
 			model.addAttribute("kwd", kwd);
@@ -117,6 +115,7 @@ public class RboardController {
 	}
 
 	/* 게시글 수정 */
+	@Auth
 	@RequestMapping(value = "/modify", method = RequestMethod.POST)
 	public String modify(@ModelAttribute RboardVo rboardvo) {
 		System.out.println("modify 요청");
@@ -128,18 +127,17 @@ public class RboardController {
 	}
 	
 	/* 게시글 삭제 (state = 'delete') */
+	@Auth
 	@RequestMapping(value = "/delete", method = RequestMethod.GET)
-	public String delete(@RequestParam("no") int no, HttpSession session,
+	public String delete(@RequestParam("no") int no, @AuthUser UserVo authUser,
 						 @RequestParam(value = "crtPage", required = false, defaultValue = "1") int crtPage,
 						 @RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
 						 Model model) {
 		System.out.println("delete 요청");
 
-		UserVo authUser = (UserVo) session.getAttribute("authUser");
-
 		RboardVo rboardvo = rboardService.read(no);
 
-		if (authUser != null && authUser.getNo() == rboardvo.getUserNo()) {
+		if (authUser.getNo() == rboardvo.getUserNo()) {
 			int count = rboardService.delete(no);
 			System.out.println("성공 횟수: " + count);
 		}

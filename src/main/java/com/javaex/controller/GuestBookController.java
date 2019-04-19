@@ -23,12 +23,9 @@ public class GuestBookController {
 	private GuestBookService guestbookService;
 
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	public String list(Model model, HttpSession session) {
+	public String list(Model model) {
 		System.out.println("list 요청");
 
-		UserVo authUser = (UserVo)session.getAttribute("authUser");
-		model.addAttribute("authUser", authUser);
-		
 		List<GuestBookVo> list = guestbookService.getList();
 		model.addAttribute("list", list);
 		return "guestbook/addlist";

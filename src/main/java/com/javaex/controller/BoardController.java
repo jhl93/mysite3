@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.javaex.interceptor.Auth;
+import com.javaex.interceptor.AuthUser;
 import com.javaex.service.BoardService;
 import com.javaex.vo.BoardVo;
 import com.javaex.vo.UserVo;
@@ -54,13 +56,13 @@ public class BoardController {
 	}
 
 	/* 게시글 작성 form */
+	@Auth
 	@RequestMapping(value = "/wform", method = RequestMethod.GET)
 	public String wform(@RequestParam(value = "crtPage", required = false, defaultValue = "1") int crtPage,
 						@RequestParam(value = "kwd", required = false, defaultValue = "") String kwd, 
-						Model model, HttpSession session) {
+						Model model, @AuthUser UserVo authUser) {
 		System.out.println("wform 요청");
 
-		UserVo authUser = (UserVo) session.getAttribute("authUser");
 		if (authUser != null) {
 			model.addAttribute("crtPage", crtPage);
 			model.addAttribute("kwd", kwd);
@@ -72,11 +74,11 @@ public class BoardController {
 	}
 
 	/* 게시글 작성 */
+	@Auth
 	@RequestMapping(value = "/write", method = RequestMethod.POST)
-	public String write(@ModelAttribute BoardVo boardvo, HttpSession session) {
+	public String write(@ModelAttribute BoardVo boardvo, @AuthUser UserVo authUser) {
 		System.out.println("write 요청");
 
-		UserVo authUser = (UserVo) session.getAttribute("authUser");
 		boardvo.setUserNo(authUser.getNo());
 
 		int count = boardService.write(boardvo);
@@ -86,17 +88,17 @@ public class BoardController {
 	}
 
 	/* 게시글 수정 form */
+	@Auth
 	@RequestMapping(value = "/mform", method = RequestMethod.GET)
 	public String mform(@RequestParam("no") int no, Model model,
 						@RequestParam(value = "crtPage", required = false, defaultValue = "1") int crtPage,
 						@RequestParam(value = "kwd", required = false, defaultValue = "") String kwd,
-						HttpSession session) {
+						@AuthUser UserVo authUser) {
 		System.out.println("mform 요청");
 
-		UserVo authUser = (UserVo) session.getAttribute("authUser");
 		BoardVo boardvo = boardService.read(no);
 		
-		if( authUser != null && authUser.getNo() == boardvo.getUserNo()) {
+		if( authUser.getNo() == boardvo.getUserNo()) {
 			model.addAttribute("boardvo", boardvo);
 			model.addAttribute("crtPage", crtPage);
 			model.addAttribute("kwd", kwd);
@@ -107,6 +109,7 @@ public class BoardController {
 	}
 
 	/* 게시글 수정 */
+	@Auth
 	@RequestMapping(value = "/modify", method = RequestMethod.POST)
 	public String modify(@ModelAttribute BoardVo boardvo) {
 		System.out.println("modify 요청");
@@ -118,18 +121,18 @@ public class BoardController {
 	}
 
 	/* 게시글 삭제 */
+	@Auth
 	@RequestMapping(value = "/delete", method = RequestMethod.GET)
 	public String delete(@RequestParam("no") int no, HttpSession session,
 						 @RequestParam(value = "crtPage", required = false, defaultValue = "1") int crtPage,
 						 @RequestParam(value = "kwd", required = false, defaultValue = "") String kwd, 
+						 @AuthUser UserVo authUser,
 						 Model model) {
 		System.out.println("delete 요청");
 
-		UserVo authUser = (UserVo) session.getAttribute("authUser");
-
 		BoardVo boardvo = boardService.read(no);
 
-		if (authUser != null && authUser.getNo() == boardvo.getUserNo()) {
+		if (authUser.getNo() == boardvo.getUserNo()) {
 			int count = boardService.delete(no);
 			System.out.println("성공 횟수: " + count);
 		}

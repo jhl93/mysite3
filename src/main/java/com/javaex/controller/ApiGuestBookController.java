@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.javaex.interceptor.Auth;
 import com.javaex.service.GuestBookService;
 import com.javaex.vo.GuestBookVo;
 

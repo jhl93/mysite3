@@ -11,11 +11,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.javaex.interceptor.Auth;
+import com.javaex.interceptor.AuthUser;
 import com.javaex.service.GalleryService;
 import com.javaex.vo.GalleryVo;
 import com.javaex.vo.UserVo;
@@ -50,14 +51,14 @@ public class GalleryController {
 		return galleryVo;
 	}
 
+	@Auth
 	@ResponseBody
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
-	public GalleryVo upload(MultipartHttpServletRequest request, @ModelAttribute GalleryVo vo, HttpSession session) {
+	public GalleryVo upload(MultipartHttpServletRequest request, @ModelAttribute GalleryVo vo, @AuthUser UserVo authUser) {
 		System.out.println("upload 요청");
 		Iterator<String> itr = request.getFileNames();
 		MultipartFile file = request.getFile(itr.next());
 
-		UserVo authUser = (UserVo) session.getAttribute("authUser");
 		vo.setUserNo(authUser.getNo());
 
 		GalleryVo galleryVo = galleryService.restore(vo, file);
@@ -65,14 +66,14 @@ public class GalleryController {
 		return galleryVo;
 	}
 
+	@Auth
 	@ResponseBody
 	@RequestMapping(value = "/delete", method = RequestMethod.POST)
-	public int delete(@ModelAttribute GalleryVo galleryVo, HttpSession session) {
+	public int delete(@ModelAttribute GalleryVo galleryVo, @AuthUser UserVo authUser) {
 		System.out.println("delete 요청");
-		if (session.getAttribute("authUser") != null) {
-			UserVo authUser = (UserVo) session.getAttribute("authUser");
-			galleryVo.setUserNo(authUser.getNo());
-		}
+		
+		galleryVo.setUserNo(authUser.getNo());
+			
 		int count = galleryService.delete(galleryVo);
 		System.out.println("삭제 횟수: " + count);
 		if (count == 0) {
