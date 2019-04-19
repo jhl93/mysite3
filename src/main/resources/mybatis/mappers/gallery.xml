@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="gallery">
+
+	<insert id="insertFile" parameterType="GalleryVo">
+		<selectKey keyProperty="no" resultType="int" order="BEFORE">
+			select seq_gallery_no.nextval from dual
+		</selectKey>
+		<![CDATA[
+			insert into gallery ( no,
+								  user_no,
+								  comments,
+								  filepath,
+								  orgname,
+								  savename,
+								  filesize )
+			values ( #{no},
+					 #{userNo},
+					 #{comments},
+					 #{filePath},
+					 #{orgName},
+					 #{saveName},
+					 #{fileSize} )
+   		]]>
+	</insert>
+	
+	<select id="selectList" resultType="GalleryVo">
+		<![CDATA[
+			select no,
+				   user_no userNo,
+				   comments,
+				   filepath filePath,
+				   orgname orgName,
+				   savename saveName,
+				   filesize fileSize 
+			from gallery
+			order by no
+		]]>
+	</select>
+	
+	<select id="selectByNo" parameterType="GalleryVo" resultType="GalleryVo">
+		<![CDATA[
+			select no,
+				   user_no userNo,
+				   comments,
+				   filepath filePath,
+				   orgname orgName,
+				   savename saveName,
+				   filesize fileSize 
+			from gallery
+			where no = #{no}
+		]]>
+	</select>
+	
+	<delete id="delete" parameterType="GalleryVo">
+		<![CDATA[
+			delete from gallery
+			where no = #{no} and user_no = #{userNo}
+		]]>
+	</delete>
+	
+</mapper>

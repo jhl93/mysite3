@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.javaex.service.UserService;
 import com.javaex.vo.UserVo;
@@ -92,5 +93,13 @@ public class UserController {
 		UserVo authUser = (UserVo) session.getAttribute("authUser");
 		authUser.setName(uservo.getName());
 		return "redirect:/main";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/emailcheck", method = RequestMethod.POST)
+	public boolean emailCheck(@RequestParam("email") String email) {
+		System.out.println(email);
+		boolean result = userService.emailCheck(email);
+		return result;
 	}
 }

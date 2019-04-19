@@ -6,6 +6,9 @@
 <meta charset="UTF-8">
 <link href="${pageContext.request.contextPath}/assets/css/mysite.css" rel="stylesheet" type="text/css">
 <link href="${pageContext.request.contextPath}/assets/css/user.css" rel="stylesheet" type="text/css">
+
+<script type="text/javascript" src="${pageContext.request.contextPath}/assets/js/jquery/jquery-1.12.4.js"></script>
+
 <title>Mysite</title>
 </head>
 <body>
@@ -26,7 +29,8 @@
 						<div class="form-group">
 							<label class="block-label" for="email">이메일</label> 
 							<input id="email" type="text" name="email" value=""> 
-							<input type="button" value="id 중복체크">
+							<input id="btnCheck" type="button" value="id 중복체크">
+							<p id="emailResult"> </p>
 						</div>
 						<div class="form-group">
 							<label class="block-label" for="password">패스워드</label> 
@@ -57,4 +61,37 @@
 	</div>
 	<!-- /container -->
 </body>
+
+<script type="text/javascript">
+	$("#btnCheck").on("click", function(){
+		console.log("버튼클릭");
+		var email = $("#email").val();
+		console.log(email);
+		
+		$.ajax({
+			
+			url : "${pageContext.request.contextPath }/user/emailcheck",		
+			type : "post",
+			/* contentType : "application/json", */  /* JSON 형태로 보낼 때 */
+			data : {email: email},
+
+			dataType : "json",
+			success : function(result){
+				/*성공시 처리해야될 코드 작성*/
+				console.log(result);
+				if(result == true){
+					$("#emailResult").text("사용할 수 있는 이메일 입니다.");
+					$("#emailResult").css("color", "blue");
+				} else {
+					$("#emailResult").text("사용중인 이메일 입니다.");
+					$("#emailResult").css("color", "red");
+				}
+			},
+			error : function(XHR, status, error) {
+				console.error(status + " : " + error);
+			}
+		});
+
+	});
+</script>
 </html>

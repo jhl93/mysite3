@@ -16,12 +16,15 @@
 	</select>
 
 	<insert id="insert" parameterType="GuestBookVo">
+		<selectKey keyProperty="no" resultType="int" order="BEFORE">
+			select seq_guestbook_no.nextval from dual
+		</selectKey>
 		<![CDATA[
 			insert into guestbook( no,
 								   name,
 								   password,
 								   content )
-			values( seq_guestbook_no.nextval,
+			values( #{no},
 					#{name},
 					#{password},
 					#{content} )
@@ -36,4 +39,40 @@
 		]]>
 	</delete>
 
+	<select id="selectListByRnum" parameterType="map" resultType="GuestBookVo">
+		<![CDATA[
+			select rn,
+       			   no,
+       			   name,
+       			   password,
+       			   content,
+       			   regDate
+			from (select rownum rn,
+			             no,
+			             name,
+			             password,
+			             content,
+			             regDate
+			      from (select no,
+			                   name,
+			                   password,
+			                   content,
+			                   reg_date regDate
+			            from guestbook
+			            order by no desc))
+			where rn >= #{startNo} and rn <= ${endNo}
+		]]>
+	</select>
+	
+	<select id="selectByNo" parameterType="GuestBookVo" resultType="GuestBookVo">
+		<![CDATA[
+			select no,
+				   name,
+				   password,
+				   content,
+				   reg_date as regDate
+			from guestbook
+			where no = #{no}
+		]]>
+	</select>
 </mapper>

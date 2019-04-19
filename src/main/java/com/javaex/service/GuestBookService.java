@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.javaex.dao.GuestBookDao;
 import com.javaex.vo.GuestBookVo;
@@ -27,5 +28,15 @@ public class GuestBookService {
 	/* 방명록 삭제 */
 	public int delete(GuestBookVo vo) {
 		return dao.delete(vo);
+	}
+
+	@Transactional
+	public GuestBookVo add2(GuestBookVo vo) {
+		dao.insert(vo);
+		return dao.selectByNo(vo);
+	}
+
+	public List<GuestBookVo> getScrollList(int startNo, int endNo) {
+		return dao.selectListByRnum(startNo, endNo);
 	}
 }
