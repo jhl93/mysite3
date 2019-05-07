@@ -49,6 +49,8 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 		
         //5.모든 조건을 만족한 사용자는 요청한 곳으로 보낸다.
 		System.out.println("@Auth 있음, session 있음, authUser 있음");
+		((UserVo)request.getSession().getAttribute("authUser")).getNo();
+		System.out.println(((UserVo)request.getSession().getAttribute("authUser")).getNo());
         return true; 
 
 	}

@@ -28,7 +28,7 @@ public class AuthUserHandlerMethodArgumentResolver implements HandlerMethodArgum
 			return false;
 		}
 		
-		return false;
+		return true;
 	}
 
 	@Override
@@ -36,6 +36,7 @@ public class AuthUserHandlerMethodArgumentResolver implements HandlerMethodArgum
 			NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 		if(supportsParameter(parameter) == false) {
 			// 쓸 수 있는 파라미터 형식이 아니다. @AuthUser(X) UserVo(X)
+			System.out.println("여기까지1");
 			return WebArgumentResolver.UNRESOLVED;
 		}
 		
@@ -43,10 +44,12 @@ public class AuthUserHandlerMethodArgumentResolver implements HandlerMethodArgum
 		HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
 		HttpSession session = request.getSession();
 		if(session == null) {
+			System.out.println("여기까지2");
 			return WebArgumentResolver.UNRESOLVED;
 		}
 		
 		// @AuthUser(O) UserVo(O) 세션(O)
+		System.out.println("여기까지3");
 		return session.getAttribute("authUser");
 	}
 

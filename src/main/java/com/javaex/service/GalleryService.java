@@ -22,7 +22,8 @@ public class GalleryService {
 
 	public GalleryVo restore(GalleryVo vo, MultipartFile file) {
 
-		String saveDir = "D:\\bitStudy\\upload";
+		String saveDir = "/home/bituser/upload";
+		//String saveDir = "D:\\bitStudy\\upload";
 
 		// 오리지날 파일명
 		String orgName = file.getOriginalFilename();
@@ -37,7 +38,7 @@ public class GalleryService {
 		System.out.println("saveName: " + saveName);
 
 		// 파일패스
-		String filePath = saveDir + "\\" + saveName;
+		String filePath = saveDir + "/" + saveName;
 		System.out.println("filePath: " + filePath);
 
 		// 파일사이즈
@@ -64,9 +65,10 @@ public class GalleryService {
 			e.printStackTrace();
 		}
 		
+		System.out.println(vo.toString());
 		int count = dao.insertFile(vo);
 		System.out.println("성공 횟수: " + count);
-		
+		System.out.println(vo.toString());
 		return dao.selectByNo(vo);
 	}
 

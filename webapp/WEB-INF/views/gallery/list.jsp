@@ -147,7 +147,7 @@
 
 		$.ajax({
 
-			url : "${pageContext.request.contextPath }/gallery/upload",
+			url : "${pageContext.request.contextPath }/gallery/uploadImg",
 			type : "post",
 			contentType : false,
 			processData : false,

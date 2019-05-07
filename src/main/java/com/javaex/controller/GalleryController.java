@@ -3,8 +3,6 @@ package com.javaex.controller;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -53,12 +51,13 @@ public class GalleryController {
 
 	@Auth
 	@ResponseBody
-	@RequestMapping(value = "/upload", method = RequestMethod.POST)
+	@RequestMapping(value = "/uploadImg", method = RequestMethod.POST)
 	public GalleryVo upload(MultipartHttpServletRequest request, @ModelAttribute GalleryVo vo, @AuthUser UserVo authUser) {
 		System.out.println("upload 요청");
 		Iterator<String> itr = request.getFileNames();
 		MultipartFile file = request.getFile(itr.next());
-
+		System.out.println(authUser.toString());
+		System.out.println(authUser.getNo());
 		vo.setUserNo(authUser.getNo());
 
 		GalleryVo galleryVo = galleryService.restore(vo, file);

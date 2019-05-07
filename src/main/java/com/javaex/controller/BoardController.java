@@ -63,6 +63,7 @@ public class BoardController {
 						Model model, @AuthUser UserVo authUser) {
 		System.out.println("wform 요청");
 
+		System.out.println(authUser.toString());
 		if (authUser != null) {
 			model.addAttribute("crtPage", crtPage);
 			model.addAttribute("kwd", kwd);
