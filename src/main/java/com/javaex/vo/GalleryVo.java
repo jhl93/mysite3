@@ -9,6 +9,7 @@ public class GalleryVo {
 	private String orgName;
 	private String saveName;
 	private long fileSize;
+	private String url;
 
 	public GalleryVo() {
 	}
@@ -87,6 +88,14 @@ public class GalleryVo {
 
 	public void setFileSize(long fileSize2) {
 		this.fileSize = fileSize2;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 	@Override

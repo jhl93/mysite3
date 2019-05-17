@@ -57,7 +57,7 @@
 	</bean>
 
 	<!-- url매핑 -->
-	<mvc:resources mapping="/upload/**" location="file:/home/bituser/upload/" />
+	<mvc:resources mapping="/upload/**" location="https://s3.ap-northeast-2.amazonaws.com/com.javaex.jonghyun.upload/" />
 
 	<!-- Interceptors -->
 	<mvc:interceptors>

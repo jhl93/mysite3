@@ -61,7 +61,7 @@ public class GalleryController {
 		vo.setUserNo(authUser.getNo());
 
 		GalleryVo galleryVo = galleryService.restore(vo, file);
-
+		
 		return galleryVo;
 	}
 
